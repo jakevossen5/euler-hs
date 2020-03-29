@@ -1,6 +1,8 @@
 module Main where
 
 import Lib
+import Data.List
+import Data.Ord
 
 -- If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
 -- Find the sum of all the multiples of 3 or 5 below 1000.
@@ -27,9 +29,21 @@ problemThree :: Integer -> Integer
 problemThree x = maximum (filter (isFactor x) (filter isPrime [1, 3..sqX]))
     where sqX = lowerSq x
 
+-- A palindromic number reads the same both ways. The largest palindrome made from the product of two 2-digit numbers is 9009 = 91 × 99.
+-- Find the largest palindrome made from the product of two 3-digit numbers.
+
+-- problemFour :: [Integer]
+problemFour = maximum palindromes
+    where
+        palindromes = filter (isIntPalindrome) listOfSums
+            where
+                listOfSums = map (multTuple) [ (x,y) | x<-[100..999], y<-[x..999] ]
+                    where
+                        multTuple t = (fst t) * (snd t)
 
 main :: IO ()
-main = do 
-    putStrLn (show (problemOne 999))
-    putStrLn (show (problemTwo 4000000))
+main = do
+    putStrLn (show problemFour)
     putStrLn (show (problemThree 600851475143))
+    putStrLn (show (problemTwo 4000000))
+    putStrLn (show (problemOne 999))

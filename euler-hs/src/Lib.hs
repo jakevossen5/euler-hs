@@ -1,7 +1,13 @@
 module Lib
-    ( getNFibs, getUnlimitedFibs, isFactor, primeList, isPrime, lowerSq
+    ( getNFibs, getUnlimitedFibs, isFactor, primeList, isPrime, lowerSq, isPalindrome, isIntPalindrome
     ) where
 
+
+isPalindrome :: [Char] -> Bool
+isPalindrome x = x == (reverse x)
+
+isIntPalindrome :: Integer -> Bool
+isIntPalindrome x = isPalindrome (show x)
 
 lowerSq :: Integer -> Integer
 lowerSq x = floor (sqrt (fromIntegral x))
@@ -13,7 +19,7 @@ primeList  = 2 : 3 : filter (`noDivs` tail primeList) [5,7..]
 
 isPrime n = n > 1 && noDivs n primeList
 
--- isFactor :: Int -> Int -> Bool
+isFactor :: Integer -> Integer -> Bool
 isFactor x y = x `mod` y == 0
 -- getUnlimitedFibs :: [Int]
 -- getUnlimitedFibs xs = [1, 1] ++ getUnlimitedFibs(xs ++ [getNextFib xs])
