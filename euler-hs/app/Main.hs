@@ -3,6 +3,7 @@ module Main where
 import Lib
 import Data.List
 import Data.Ord
+import Data.Char
 
 -- If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
 -- Find the sum of all the multiples of 3 or 5 below 1000.
@@ -32,17 +33,47 @@ problemThree x = maximum (filter (isFactor x) (filter isPrime [1, 3..sqX]))
 -- A palindromic number reads the same both ways. The largest palindrome made from the product of two 2-digit numbers is 9009 = 91 × 99.
 -- Find the largest palindrome made from the product of two 3-digit numbers.
 
--- problemFour :: [Integer]
+problemFour :: Integer
 problemFour = maximum palindromes
     where
         palindromes = filter (isIntPalindrome) listOfSums
             where
-                listOfSums = map (multTuple) [ (x,y) | x<-[100..999], y<-[x..999] ]
-                    where
-                        multTuple t = (fst t) * (snd t)
+                listOfSums = [ (x * y) | x<-[100..999], y<-[x..999] ]
+
+problemFive :: Integer -> Integer
+problemFive maxFact = take 1 (filter isFactorForAll [maxFact, maxFact * 2..highestPossible]) !! 0
+    where
+        isFactorForAll x = all ( == True) (map (isFactor x) [1..maxFact])
+        highestPossible = product [1..maxFact]
+
+myTempVar :: Integer
+myTempVar = 5
+
+problemSix :: Integer -> Integer
+problemSix n = sumSquared - sumOfSquares
+    where
+        sumOfSquares = sum (map (^2) [1..n])
+        sumSquared = sum [1..n] ^ 2
+
+problemSeven :: Int -> Integer
+problemSeven x = last $ take x primeList
+
+problemEightInput = "7316717653133062491922511967442657474235534919493496983520312774506326239578318016984801869478851843858615607891129494954595017379583319528532088055111254069874715852386305071569329096329522744304355766896648950445244523161731856403098711121722383113622298934233803081353362766142828064444866452387493035890729629049156044077239071381051585930796086670172427121883998797908792274921901699720888093776657273330010533678812202354218097512545405947522435258490771167055601360483958644670632441572215539753697817977846174064955149290862569321978468622482839722413756570560574902614079729686524145351004748216637048440319989000889524345065854122758866688116427171479924442928230863465674813919123162824586178664583591245665294765456828489128831426076900422421902267105562632111110937054421750694165896040807198403850962455444362981230987879927244284909188845801561660979191338754992005240636899125607176060588611646710940507754100225698315520005593572972571636269561882670428252483600823257530420752963450"
+
+-- problemEight :: [Char] -> Integer
+problemEight input numToSplit = maximum (zip (map strProduct [makeSubListAt x | x <- [0..inLen]]) [makeSubListAt x | x <- [0..inLen]])
+    where
+        makeSubListAt x = take numToSplit (drop x input)
+        inLen = length input
+        strProduct s = product (map (digitToInt) s)
 
 main :: IO ()
 main = do
+    putStrLn "done compiling"
+    putStrLn (show (problemEight problemEightInput 13))
+    putStrLn (show (problemSeven 10001))
+    putStrLn (show (problemSix 100))
+    putStrLn (show (problemFive 20))
     putStrLn (show problemFour)
     putStrLn (show (problemThree 600851475143))
     putStrLn (show (problemTwo 4000000))
