@@ -46,6 +46,7 @@ executable euler-hs-exe
   build-depends:
       base >=4.7 && <5
     , euler-hs
+    , integer-logarithms
   default-language: Haskell2010
 
 test-suite euler-hs-test

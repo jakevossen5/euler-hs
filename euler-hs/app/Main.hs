@@ -4,6 +4,7 @@ import Lib
 import Data.List
 import Data.Ord
 import Data.Char
+import Math.NumberTheory.Logarithms
 
 -- If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
 -- Find the sum of all the multiples of 3 or 5 below 1000.
@@ -108,15 +109,13 @@ problem48 n = lastN 10 (show $ sum $ map (selfPower) [1..n] )
 -- simplify fraction from : https://github.com/liamnaddell/simplify/blob/master/src/Lib.hs
 problem699 k = sum (filter p [1..k])
     where
-        p n = is3Cubed $ snd $ simplifyFraction (sum $ getFactors n) (n)
+        p n = is3Cubed $ fromInteger (snd $ simplifyFraction (sum $ getFactors n) (n))
             where
-                is3Cubed x =  x `elem` powersOfThree
-                    where
-                        powersOfThree = map (3^) [1..k]
+                is3Cubed x = x `mod` 3 == 0 && 3^(integerLogBase 3 x) == x && x /= 1
 main :: IO ()
 main = do
     putStrLn "done compiling"
-    putStrLn $ show $ problem699 (10^6)
+    putStrLn $ show $ problem699 (10^14)
     putStrLn $ show $ problem48 1000
     putStrLn $ show $ problem25 1000
     putStrLn $ show $ problem20 100
