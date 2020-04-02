@@ -98,14 +98,25 @@ problem25 n = (length nonIncluding) + 1
         nonIncluding = takeWhile (numDigitsLTN) (getUnlimitedFibs 1 1)
         numDigitsLTN x = length (show x) < n
 
--- problem48 
+-- problem48
 problem48 n = lastN 10 (show $ sum $ map (selfPower) [1..n] )
     where
         selfPower x = x^x
 
+
+-- problem 699
+-- simplify fraction from : https://github.com/liamnaddell/simplify/blob/master/src/Lib.hs
+problem699 k = sum (filter p [1..k])
+    where
+        p n = is3Cubed $ snd $ simplifyFraction (sum $ getFactors n) (n)
+            where
+                is3Cubed x =  x `elem` powersOfThree
+                    where
+                        powersOfThree = map (3^) [1..k]
 main :: IO ()
 main = do
     putStrLn "done compiling"
+    putStrLn $ show $ problem699 (10^6)
     putStrLn $ show $ problem48 1000
     putStrLn $ show $ problem25 1000
     putStrLn $ show $ problem20 100

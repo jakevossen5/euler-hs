@@ -13,8 +13,15 @@ module Lib
     , sumOfDigits
     , factorial
     , lastN
+    , simplifyFraction
     ) where
 import Data.Char
+
+simplifyFraction :: Integer -> Integer -> (Integer,Integer)
+simplifyFraction x y
+  | rem == 1 = (x,y)
+  | otherwise = simplifyFraction (x `div` rem) (y `div` rem)
+      where rem = gcd x y
 
 -- https://stackoverflow.com/questions/17252851/how-do-i-take-the-last-n-elements-of-a-list
 lastN n xs = drop (length xs - n) xs
