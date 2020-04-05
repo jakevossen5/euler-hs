@@ -4,7 +4,7 @@ module Lib
     , getNextFib
     , isFactor
     , primeList
-    , isPrime
+    , isPrime'
     , lowerSq
     , isPalindrome
     , isIntPalindrome
@@ -14,8 +14,27 @@ module Lib
     , factorial
     , lastN
     , simplifyFraction
+    , isPowerOf
+    , memoize
+    , integerFactors
+    , factorise
+    , unPrime
+    , factorsFromPrimeFactors
+    , factorSum
+    , factorList
+    , combinePowers
+    , fslist
     ) where
 import Data.Char
+import Data.List (sort, group, nub, subsequences)
+import Control.Arrow ((&&&))
+import Data.Bool (bool)
+import Math.NumberTheory.Primes (factorise, unPrime)
+-- memoize :: (Integer -> a) -> (Integer -> a)
+memoize f = (map f [0 ..] !!)
+
+isPowerOf :: Integer -> Integer -> Integer -> Bool
+isPowerOf base check shortcut = if check == shortcut then True else if check `mod` base == 0 then isPowerOf base (check `div` base ) shortcut else False
 
 simplifyFraction :: Integer -> Integer -> (Integer,Integer)
 simplifyFraction x y
@@ -27,6 +46,35 @@ simplifyFraction x y
 lastN n xs = drop (length xs - n) xs
 
 factorial n = foldl (\acc x -> acc * x) 1 [1..n]
+
+expand t = replicate ((snd t) + 1) (fst t)
+
+combinePowers :: [[Integer]] -> [Integer]
+combinePowers xs = map (product) (sequence xs)
+-- combinePowers (xs:[]) = xs
+-- combinePowers (xs:ys:[]) = [(x * y)  | x <- xs, y <- ys]
+-- combinePowers (xs:ys:rems:_) = combined ++ (combinePowers [combined] ++ rems)
+-- combinePowers (xs:ys:rems:[]) = combined ++ (combinePowers [combined] ++ rems)
+  -- where
+    -- combined = [(x * y)  | x <- xs, y <- ys]
+
+factorsFromPrimeFactors pfs = nub $ combinePowers $ powered pfs
+
+powered pfs = map (convertTuplesToPower) withPower --(product pfs)
+  where
+    convertTuplesToPower xs = map (\t -> (fst t) ^ (snd t)) xs
+    withPower = map (\l -> zip l [0..]) grouped
+    grouped = (group $ sort $ pfs)
+
+-- -- prods -> 
+-- prods lhs (x:xs) = lhs * (product xs):prods (lhs + )
+-- prods (_ []) = []
+
+fslist x = concat $ map (expand) [((unPrime $ fst x), ( fromIntegral $ snd x)) | x <- (factorise x)]
+
+factorList x = factorsFromPrimeFactors $ fslist x
+
+factorSum x = sum $ factorList x
 
 sumOfDigits n = sum $ map (digitToInt) (show $ n)
 
@@ -44,7 +92,7 @@ noDivs n ds = foldr (\d r -> d*d > n || (rem n d > 0 && r)) True ds
 
 primeList  = 2 : 3 : filter (`noDivs` tail primeList) [5,7..]
 
-isPrime n = n > 1 && noDivs n primeList
+isPrime' n = n > 1 && noDivs n primeList
 
 numFactors :: Integer -> Int
 numFactors n = length $ getFactors n
@@ -65,6 +113,17 @@ getFactors n =
       [ i
       | i <- [1 .. r - 1] 
       , mod n i == 0 ]
+
+-- integerFactors :: Int -> [Int]
+integerFactors n =
+  bool -- For perfect squares, `tail` excludes cofactor of square root
+    (lows ++ (quot n <$> bool id tail (n == intSquared) (reverse lows)))
+    []
+    (n < 1)
+  where
+    (intSquared, lows) =
+      (^ 2) &&& (filter ((0 ==) . rem n) . enumFromTo 1) $
+      floor (sqrt $ fromIntegral n)
 
 
 isFactor :: Integer -> Integer -> Bool

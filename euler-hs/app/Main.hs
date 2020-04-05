@@ -5,6 +5,8 @@ import Data.List
 import Data.Ord
 import Data.Char
 import Math.NumberTheory.Logarithms
+-- import Data.Set
+import qualified Data.Set as Set
 
 -- If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
 -- Find the sum of all the multiples of 3 or 5 below 1000.
@@ -28,7 +30,7 @@ problemTwo maxSize = sum (filter even (takeWhile (< maxSize) (getUnlimitedFibs 1
 -- What is the largest prime factor of the number 600851475143 ?
 
 problemThree :: Integer -> Integer
-problemThree x = maximum (filter (isFactor x) (filter isPrime [1, 3..sqX]))
+problemThree x = maximum (filter (isFactor x) (filter isPrime' [1, 3..sqX]))
     where sqX = lowerSq x
 
 -- A palindromic number reads the same both ways. The largest palindrome made from the product of two 2-digit numbers is 9009 = 91 × 99.
@@ -104,17 +106,35 @@ problem48 n = lastN 10 (show $ sum $ map (selfPower) [1..n] )
     where
         selfPower x = x^x
 
+allCubedThreesUnder x = takeWhile (<=x) $ map (3^) [1..]
 
+-- is3Cubed x  = x `mod` 3 == 0 && 3^(integerLogBase 3 x) == x && x /= 1
 -- problem 699
 -- simplify fraction from : https://github.com/liamnaddell/simplify/blob/master/src/Lib.hs
-problem699 k = sum (filter p [1..k])
+problem699 k = sum (filter p $ [3,6..k])
     where
-        p n = is3Cubed $ fromInteger (snd $ simplifyFraction (sum $ getFactors n) (n))
+        p n = (is3Cubed $ fromInteger (snd $ simplifyFraction (factorSum n) (n)))
             where
-                is3Cubed x = x `mod` 3 == 0 && 3^(integerLogBase 3 x) == x && x /= 1
+                divsIntoSomeCube a = any (==True) (map (\x ->  a `mod` x == 0)  (allCubedThreesUnder a))
+                is3Cubed a = a `mod` 3 == 0 && a == (last $ allCubedThreesUnder a)
+
+problem699Helper n = onlyThrees $ simplify (primeFactors $ factorSum n ) (primeFactors n)
+    where
+        primeFactors x = fslist x
+        simplify num dum = filter (\x -> x `elem` num) dum
+        onlyThrees xs = any (/= 3) xs
+
+ordNub :: (Ord a) => [a] -> [a]
+ordNub l = go Set.empty l
+  where
+    go _ [] = []
+    go s (x:xs) = if x `Set.member` s then go s xs
+                                      else x : go (Set.insert x s) xs
+
 main :: IO ()
 main = do
     putStrLn "done compiling"
+    -- putStrLn $ show $ (is3Cubed ()
     putStrLn $ show $ problem699 (10^14)
     putStrLn $ show $ problem48 1000
     putStrLn $ show $ problem25 1000
