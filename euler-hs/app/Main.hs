@@ -111,7 +111,7 @@ allCubedThreesUnder x = takeWhile (<=x) $ map (3^) [1..]
 -- is3Cubed x  = x `mod` 3 == 0 && 3^(integerLogBase 3 x) == x && x /= 1
 -- problem 699
 -- simplify fraction from : https://github.com/liamnaddell/simplify/blob/master/src/Lib.hs
-problem699 k = sum (filter p $ [3,6..k])
+problem699 k = sum (filter problem699Helper $ [3,6..k])
     where
         p n = (is3Cubed $ fromInteger (snd $ simplifyFraction (factorSum n) (n)))
             where
@@ -121,8 +121,8 @@ problem699 k = sum (filter p $ [3,6..k])
 problem699Helper n = onlyThrees $ simplify (primeFactors $ factorSum n ) (primeFactors n)
     where
         primeFactors x = fslist x
-        simplify num dum = filter (\x -> x `elem` num) dum
-        onlyThrees xs = any (/= 3) xs
+        simplify num dum = dum \\ num
+        onlyThrees xs = (all (== 3) xs) && (length xs > 0)
 
 ordNub :: (Ord a) => [a] -> [a]
 ordNub l = go Set.empty l
