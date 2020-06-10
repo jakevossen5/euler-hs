@@ -4,9 +4,11 @@ import Lib
 import Data.List
 import Data.Ord
 import Data.Char
+import Data.Maybe
 import Math.NumberTheory.Logarithms
 -- import Data.Set
 import qualified Data.Set as Set
+-- import Math.NumberTheory.Primes
 
 -- If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
 -- Find the sum of all the multiples of 3 or 5 below 1000.
@@ -111,18 +113,24 @@ allCubedThreesUnder x = takeWhile (<=x) $ map (3^) [1..]
 -- is3Cubed x  = x `mod` 3 == 0 && 3^(integerLogBase 3 x) == x && x /= 1
 -- problem 699
 -- simplify fraction from : https://github.com/liamnaddell/simplify/blob/master/src/Lib.hs
-problem699 k = sum (filter problem699Helper $ [3,6..k])
-    where
-        p n = (is3Cubed $ fromInteger (snd $ simplifyFraction (factorSum n) (n)))
-            where
-                divsIntoSomeCube a = any (==True) (map (\x ->  a `mod` x == 0)  (allCubedThreesUnder a))
-                is3Cubed a = a `mod` 3 == 0 && a == (last $ allCubedThreesUnder a)
+problem699 k = sum $ map fst $ filter problem699Helper $ (numbersWithFactorSumsWithThrees k)
 
-problem699Helper n = onlyThrees $ simplify (primeFactors $ factorSum n ) (primeFactors n)
+-- 10^6 should be 825991
+-- numbersWithFactorSumsWithThrees :: Integer -> [[Integer]]
+-- numbersWithFactorSumsWithThrees x = filter (\(a,b,c) -> a) (map (getFactorSumData) [2..x])
+numbersWithFactorSumsWithThrees x = map (\(a,b,c) -> (b,c)) $ filter (\(a,b,c) -> a) (map (getFactorSumData) [2..x])
+    where
+        getFactorSumData y = (y `mod` 3 /= 0 && fsx `mod` 3 == 0, y, fsx)
+            where fsx = factorSum y -- TODO could return this with factor list so we don't have to recalc later?
+
+problem699Helper (number,factorsum) = onlyThrees $ simplify (primeFactors $ factorsum ) (primeFactors number)
     where
         primeFactors x = fslist x
         simplify num dum = dum \\ num
         onlyThrees xs = (all (== 3) xs) && (length xs > 0)
+
+oneInt :: Int
+oneInt = 1
 
 ordNub :: (Ord a) => [a] -> [a]
 ordNub l = go Set.empty l
@@ -131,11 +139,60 @@ ordNub l = go Set.empty l
     go s (x:xs) = if x `Set.member` s then go s xs
                                       else x : go (Set.insert x s) xs
 
+problem21 x = sum $ filter isAmicable [2..x]
+isAmicable k = k /= (factorSum k) - k && (factorSum k) - k == factorSum ((factorSum k) - k) - k
+
+problem22 = sum $ map getNameValue nameIndexZip
+    where
+        getNameValue (index, val) = index * (sum $ map capToInt val)
+        nameIndexZip = zip [1..] (sort problem22Names)
+
+capToInt :: Char -> Int
+capToInt c = fromMaybe (-1) (elemIndex c ['A'..'Z']) + 1
+
+problem24 =  (sort $ (permutations ['0'..'9'])) !! 999999
+
+problem27 = (fst $ snd res) * (snd $ snd res)
+    where
+        res = last $ sort $ zip (map (getPrimeQuadsLen) coefs) coefs
+        toQuad (a, b) = quad 1 a b
+        coefs = [(a, b) | a <- [(-1000)..(1000)], b <- [(-1000)..(1000)]]
+
+getPrimeQuadsLen t = length $ getPrimeQuads t
+getPrimeQuads (a, b) = takeWhile isPrime' $ map (quad a b) [1..]
+quad a b n = n * n + a * n + b
+
+problem29 = length $ nub $ map toPower basePow
+    where
+        basePow = [(a,b) | a <-[2..100], b <- [2..100]]
+        toPower (a, b) = a^b
+
+problem30 = sum $ map fst (filter filterPowerFive digList)
+    where
+        filterPowerFive (n, ds) = n == (sum $ map (^5) ds)
+        digList = zip [2..1000000] (map toDigits [2..1000000])
+
+problem32 = sum $ nub $ map getSums (filter couldBePandigit [(a,b) | a <- [1..10000], b <- [a..10000]])
+    where
+        getSums (a,b) = a * b
+        couldBePandigit (a,b) = nub initDigitList == initDigitList && (not (0 `elem` initDigitList)) && (length fullList == 9 )&& ((sort fullList) == [1,2,3,4,5,6,7,8,9])
+            where
+                initDigitList = (toDigits a) ++ (toDigits b)
+                fullList = (toDigits a) ++ (toDigits b) ++ (toDigits prod)
+                prod = a * b
+
 main :: IO ()
 main = do
     putStrLn "done compiling"
-    -- putStrLn $ show $ (is3Cubed ()
-    putStrLn $ show $ problem699 (10^14)
+    putStrLn $ show $ problem32
+    putStrLn $ show $ problem30
+    putStrLn $ show $ problem29
+    putStrLn $ show $ problem27
+    putStrLn $ show $ problem24
+    putStrLn $ show $ problem22
+    putStrLn $ show $ problem21 10000
+    -- putStrLn $ show $ (length $ numbersWithFactorSumsWithThrees (10^14))
+    -- putStrLn $ show $ problem699 (10^6)
     putStrLn $ show $ problem48 1000
     putStrLn $ show $ problem25 1000
     putStrLn $ show $ problem20 100

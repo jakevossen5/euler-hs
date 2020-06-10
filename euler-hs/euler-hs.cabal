@@ -49,6 +49,7 @@ executable euler-hs-exe
     , euler-hs
     , integer-logarithms
     , containers
+    , arithmoi
   default-language: Haskell2010
 
 test-suite euler-hs-test
