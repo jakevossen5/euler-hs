@@ -181,9 +181,35 @@ problem32 = sum $ nub $ map getSums (filter couldBePandigit [(a,b) | a <- [1..10
                 fullList = (toDigits a) ++ (toDigits b) ++ (toDigits prod)
                 prod = a * b
 
+problem34 = filter matches (zip [3..10000000] (map toDigits [3..10000000]))
+    where
+        matches (ans, digs) = (sum $ map factorial digs) == ans
+
+problem35 a = length $ filter allPrime $ zip [1..a] (map getRotations [1..a])
+    where
+        allPrime (_, rs) = all isPrime' rs
+        getRotations x = nub $ map fromDigits (map (subsLst x) [1..len])
+            where
+                len = length $ toDigits x
+                subsLst x shift = drop shift . take (shift + len) $ cycle (toDigits x)
+problem36 = sum $ filter palis [1..1000000]
+    where
+        palis x = isIntPalindrome x && (isPalindrome $ toBaseTwo x)
+
+problem37 = sum $ take 11 $ filter isTrunced (drop 4 primeList)
+    where
+        isTrunced x = all isPrime' (map fromDigits $ allTruncs)
+            where
+                digs = toDigits x
+                allTruncs = (tail $ init $ tails digs) ++ (init $ drop 1 $ inits digs)
+
 main :: IO ()
 main = do
     putStrLn "done compiling"
+    putStrLn $ show $ problem37
+    putStrLn $ show $ problem36
+    putStrLn $ show $ problem35 1000000
+    putStrLn $ show $ problem34
     putStrLn $ show $ problem32
     putStrLn $ show $ problem30
     putStrLn $ show $ problem29

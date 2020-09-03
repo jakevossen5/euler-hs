@@ -1,2 +1,2 @@
 # euler-hs
-doing project euler in haskell
+Doing some [project euler](https://projecteuler.net/) to learn some Haskell basics

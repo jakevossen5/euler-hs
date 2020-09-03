@@ -29,11 +29,14 @@ module Lib
     , problem22Names
     , fromDigits
     , toDigits
+    , toBaseTwo
     ) where
 import Data.Char
+import Data.Char (intToDigit)
 import Data.List (sort, group, nub, subsequences)
 import Control.Arrow ((&&&))
 import Data.Bool (bool)
+import Numeric
 import Math.NumberTheory.Primes (factorise, unPrime, nextPrime, precPrime)
 -- memoize :: (Integer -> a) -> (Integer -> a)
 memoize f = (map f [0 ..] !!)
@@ -88,6 +91,9 @@ isPalindrome x = x == (reverse x)
 
 isIntPalindrome :: Integer -> Bool
 isIntPalindrome x = isPalindrome (show x)
+
+-- toBaseTwo :: Int -> Int
+toBaseTwo n = Numeric.showIntAtBase 2 intToDigit n ""
 
 lowerSq :: Integer -> Integer
 lowerSq x = floor (sqrt (fromIntegral x))
