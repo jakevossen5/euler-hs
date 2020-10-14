@@ -203,9 +203,20 @@ problem37 = sum $ take 11 $ filter isTrunced (drop 4 primeList)
                 digs = toDigits x
                 allTruncs = (tail $ init $ tails digs) ++ (init $ drop 1 $ inits digs)
 
-problem641 x = length $ filter (\x -> x `mod` 6 == 0 || x == 1) (map (\x -> (length $ factorList x) - 1) squares)
+n `nroot` x = toInteger $ (ceiling $ x ** (1 / fromIntegral n))
+problem641 x = 1 + ( length $ filter (\(_, len) -> len `mod` 6 == 0 || len == 1) (map (\x -> (x, (length $ factorList x) - 1)) vals))
     where
-        squares = takeWhile (<= x) (map (^2) [1..])
+        squares = concat $ map (\z -> takeWhile (<= x) (map (z^) [6,12..])) (takeWhile (\z -> z^6 < x) [2..x])
+        badSquares = takeWhile (<x ) (map (^2) [1..])
+        vals = nub $ sort $ filter (<=x) $ concat (map (\z -> takeWhile (<=x) (map (^z) [2..])) possibilities)
+        possibilities = [2..maxStart]
+            where
+                maxStart = 6 `nroot` (fromIntegral x)
+
+-- problem64anz x = (length vals, vals)
+    -- where vals = map (\(x, len) -> (fromIntegral  x) ) (problem641 x)
+
+
 -- problem641 x =
 -- problem641 x = (map (count . factorList) [2..x])
 -- problem641 x = (map (product . factorList) [1..x])
@@ -214,6 +225,7 @@ main :: IO ()
 main = do
     putStrLn "done compiling"
     putStrLn $ show $ problem641 (10 ^ 36)
+    -- putStrLn $ show $ problem641 (10 ^ 8)
     putStrLn $ show $ problem37
     putStrLn $ show $ problem36
     putStrLn $ show $ problem35 1000000
