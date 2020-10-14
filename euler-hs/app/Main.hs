@@ -203,9 +203,17 @@ problem37 = sum $ take 11 $ filter isTrunced (drop 4 primeList)
                 digs = toDigits x
                 allTruncs = (tail $ init $ tails digs) ++ (init $ drop 1 $ inits digs)
 
+problem641 x = length $ filter (\x -> x `mod` 6 == 0 || x == 1) (map (\x -> (length $ factorList x) - 1) squares)
+    where
+        squares = takeWhile (<= x) (map (^2) [1..])
+-- problem641 x =
+-- problem641 x = (map (count . factorList) [2..x])
+-- problem641 x = (map (product . factorList) [1..x])
+
 main :: IO ()
 main = do
     putStrLn "done compiling"
+    putStrLn $ show $ problem641 (10 ^ 36)
     putStrLn $ show $ problem37
     putStrLn $ show $ problem36
     putStrLn $ show $ problem35 1000000
